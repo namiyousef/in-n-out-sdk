@@ -16,6 +16,13 @@ def get_version(rel_path):
         raise RuntimeError("Unable to find version string.")
 
 
+def parse_requirements(path_to_file):
+    with open(path_to_file) as f:
+        requirements = f.readlines()
+    
+    return requirements
+
+core_packages = parse_requirements('requirements/core.txt')
 setup(
     name='in-n-out-sdk',
     version=get_version("in_n_out_sdk/__init__.py"),
@@ -23,11 +30,7 @@ setup(
     author='Yousef Nami',
     author_email='namiyousef@hotmail.com',
     url='https://github.com/namiyousef/in-n-out',
-    install_requires=[
-        'pandas',
-        'requests',
-        'pyarrow'
-    ],
+    install_requires=core_packages,
     packages=find_packages(exclude=('tests*', 'experiments*')),
     #package_data={'': ['api/specs/api.yaml']},
     include_package_data=True,
