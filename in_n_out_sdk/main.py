@@ -96,7 +96,7 @@ def write_data(
         elif dataframe_content_type == "parquet":
             # TODO later might need to think... how to expand dataframe_content_type to allow for say image being parsed etc...
             memory_buffer = io.BytesIO()
-            df.to_parquet(memory_buffer, engine="pyarrow")
+            data.to_parquet(memory_buffer, engine="pyarrow")
             memory_buffer.seek(0)
 
             files = {
@@ -136,7 +136,13 @@ def write_data(
 
     data = {"insertion_params": json.dumps(insertion_params)}
     # TODO need to update this for diff content types
-    resp = requests.post(url, data=data, files=files)
+    try:
+        resp = requests.post(url, data=data, files=files)
+    except requests.exceptions.ConnectionError as connection_error:
+        return (
+            f"Failed to connect to API. Is API healthy? Full details: {connection_error}",
+            503,
+        )
 
     return resp.text, resp.status_code
 
